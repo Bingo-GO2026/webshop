@@ -1,4 +1,4 @@
-import createMollieClient from '@mollie/api-client';
+import { createMollieClient } from '@mollie/api-client';
 
 export default async function handler(req, res) {
   // Only allow POST requests
