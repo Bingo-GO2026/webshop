@@ -1,4 +1,4 @@
-import createMollieClient from '@mollie/api-client';
+import { createMollieClient } from '@mollie/api-client';
 import emailjs from '@emailjs/nodejs';
 
 export default async function handler(req, res) {
