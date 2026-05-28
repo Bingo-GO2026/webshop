@@ -1,6 +1,3 @@
-// ── TIJDELIJK TESTBESTAND — verwijder dit als alles werkt ──
-// Gebruik: https://jouw-vercel-url.vercel.app/api/test-email?city=delft&email=jouw@email.nl
-
 import crypto from 'crypto';
 
 function generateToken(city, email) {
@@ -32,47 +29,27 @@ async function stuurEmail({ to_email, name, reply_to, subject, message }) {
 }
 
 export default async function handler(req, res) {
-  const city  = (req.query.city  || 'delft').toLowerCase();
-  const email = req.query.email;
+  const { city, email } = req.query;
 
-  if (!email) {
-    return res.status(400).send(
-      '<p style="font-family:sans-serif">Gebruik: <code>/api/test-email?city=delft&email=jouw@email.nl</code></p>'
-    );
+  if (!city || !email) {
+    return res.status(400).json({ error: 'city en email zijn verplicht' });
   }
 
   try {
-    const token   = generateToken(city, email);
-    const gameUrl = `${process.env.SITE_URL}/indexgame.html?token=${token}`;
+    const token   = generateToken(city.toLowerCase(), email);
+    const gameUrl = `https://play.bingo-go.com/index.html?token=${token}`;
 
     await stuurEmail({
       to_email: email,
       name:     'Bingo-Go speler',
       reply_to: 'BingoGo015@gmail.com',
-      subject:  `🧪 TEST — Jouw Bingo-Go ${city} link`,
-      message:  `Dit is een testmail.\n\nStad: ${city}\nGame link (72u geldig):\n${gameUrl}`,
+      subject:  `[TEST] Jouw Bingo-Go ${city} link staat klaar!`,
+      message:  `Hoi!\n\nDit is een TEST e-mail.\n\nJouw unieke spellink (72 uur geldig):\n${gameUrl}\n\nVeel plezier!\n\nHet Bingo-Go team\nBingoGo015@gmail.com`,
     });
 
-    return res.status(200).send(`
-      <html><body style="font-family:sans-serif;padding:32px;max-width:600px">
-        <h2>✅ Testmail verstuurd!</h2>
-        <p>Email gestuurd naar: <strong>${email}</strong></p>
-        <p>Stad: <strong>${city}</strong></p>
-        <p>Game link (klik om direct te testen):<br>
-          <a href="${gameUrl}" style="word-break:break-all">${gameUrl}</a>
-        </p>
-        <hr>
-        <p style="color:grey;font-size:0.85rem">
-          Vergeet api/test-email.js te verwijderen zodra alles werkt!
-        </p>
-      </body></html>
-    `);
+    return res.status(200).json({ ok: true, gameUrl });
   } catch (err) {
-    return res.status(500).send(`
-      <html><body style="font-family:sans-serif;padding:32px">
-        <h2>❌ Fout</h2>
-        <pre>${err.message}</pre>
-      </body></html>
-    `);
+    console.error('test-email error:', err);
+    return res.status(500).json({ error: err.message });
   }
 }
