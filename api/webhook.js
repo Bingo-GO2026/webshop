@@ -48,7 +48,7 @@ export default async function handler(req, res) {
       const taal = lang || 'nl';
 
       const token   = generateToken(city.toLowerCase(), email);
-      const gameUrl = `${process.env.SITE_URL}/indexgame.html?token=${token}`;
+      const gameUrl = `https://play.bingo-go.com/index.html?token=${token}`;
 
       // Email 1 → klant (bevestiging + game-link)
       await stuurEmail({
